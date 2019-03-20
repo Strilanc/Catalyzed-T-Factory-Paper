@@ -57,7 +57,11 @@ The non-Clifford gate count will likely be particularly significant for the earl
 
 Over the past decade, thanks to techniques such as block codes \cite{bravyi2012, fowler2013}, bridge compression \cite{fowler2012}, and many others \cite{horsman2012, campbell2017, campbell2018, litinski2018}, the cost of magic state distillation has steadily decreased.
 This paper adds catalyzed phasing to the pile of known techniques, continuing the tradition of gradually chipping away at the convenient approximation that magic states are the dominant cost in error-corrected quantum computation.
-In \fig{overview-dataflow} and \fig{overview-3d}, we give a high-level view of the resulting improvement in footprint and spacetime volume (in the single-factory regime, which is the regime this paper focuses on).
+
+Note that, in this paper, we focus on optimizing the cost of distillation in the {\em single-factory regime}.
+For example, we do not investigate whether there are block code factories that can use catalyzation.
+We focus on the single-factory regime because we are interested in estimating the minimum number of physical qubits needed to run classically intractable instances of various quantum algorithms at a reasonable rate, and the single-factory regime is the relevant one for these kinds of estimates.
+In \fig{overview-dataflow} and \fig{overview-3d}, we give a high-level view of this paper's improvements in footprint and spacetime volume, over previous factories in the single-factory regime.
 
 The paper is organized as follows.
 \sec{introduction} provides an overview of the paper, and explains the various notation and diagram conventions we will be using.
@@ -585,14 +589,9 @@ Early quantum computers will have limited space; it's worth sacrificing depth if
 By combining techniques from this paper and low-footprint distillation techniques mentioned in \cite{litinski2018}, it should be possible to create factories covering fewer qubits but with roughly the same volume as ours.
 
 Another interesting avenue to explore is the high-footprint / multi-factory regime, where factories based on block codes become possible.
-According to table 1 of \cite{ogorman2017factories}, assuming a physical gate error rate of $10^{-3}$ and a footprint of 17 million physical qubits, block factories can distill a CCZ state using on the order of $10^7$ qubit-rounds while achieving error rates on the order of $10^{-11}$.
-Our factory's minimum footprint is much smaller, approximately 150 thousand qubits instead of millions, but our volume and error rates are 2-3 times larger.
-(Note that the estimate from \cite{ogorman2017factories} assumes a $|T_0\rangle$ injection error rate of $0.4 \cdot 10^{-3}$, whereas we assume  $10^{-3}$.
-Also, \cite{ogorman2017factories} does not produce an explicit physical layout.
-In our experience, producing the physical layout often reveals unforeseen packing and routing overheads.)
-Clearly block factories can outperform the efficiency of our factory, assuming enough states are being distilled in parallel.
+Block factories should be able to outperform the efficiency of our factory, assuming enough states are being distilled in parallel.
 But this raises the question of whether block factories can also be improved by catalysis; are there catalyzed block factories?
-We don't know the answer to this question, and leave it as future work.
+We don't know the answer to this question.
 
 We suspect that the space of quantum circuits contains many other gems akin to the catalyzed phasing circuit.
 We consider finding these circuit to be important, because they can be surprisingly efficient at their tasks.
