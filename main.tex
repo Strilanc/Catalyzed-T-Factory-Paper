@@ -19,7 +19,6 @@
 
 \begin{document}
 
-
 \title{\texorpdfstring{
 Efficient magic state factories with a catalyzed $|CCZ\rangle \rightarrow 2|T\rangle$ transformation
 }{
@@ -574,18 +573,26 @@ However, the effect of this optimization on the topological error rate is diffic
 Another possible optimization is to eagerly route $|CCZ\rangle$ qubits emerging from the CCZ factory to their final destination (in preparation for a parity measurement), instead of holding them next to the factory until they are verified.
 Removing the output-holding area reduces the CCZ factory's footprint by over 20\%, which is a large gain, but it is important to keep in mind that this is not a true reduction in volume but rather a reclassification of some of the factory's volume as routing volume.
 
+Yet another possible optimization would be to carefully analyze how topological errors within the surface code propagate through the factory.
+At any location where an error chain between two boundaries would result in a detected failure, the boundaries can be moved closer together.
+
+A final idea that should be investigated is estimating logical error probabilities from the observed pattern of detection events produced by the surface code's stabilizer measurements.
+For example, if there were a sudden burst of detection events crossing between two boundaries during the execution of a factory, the factory's output could be cautiously discarded even if the logical measurement results indicate there is no problem.
+Assuming there is some metric that can be derived from the raw detection events, that reliably correlates with the true failure probability, this would allow us to reduce the number of false negatives (where an undetected error escapes the factory) at the cost increasing the number of false positives (where a run with no error is discarded).
+
 In this paper we focused on making a low-volume factory in the single-factory regime, but it is also important to consider factories optimized to have a tiny footprint.
 Early quantum computers will have limited space; it's worth sacrificing depth if it means the factory actually fits on the machine.
 By combining techniques from this paper and low-footprint distillation techniques mentioned in \cite{litinski2018}, it should be possible to create factories covering fewer qubits but with roughly the same volume as ours.
 
 Another interesting avenue to explore is the high-footprint / multi-factory regime, where factories based on block codes become possible.
-Even without catalysis, block factories can use the flexibility allowed by their larger footprints to outperform the efficiency of our factory.
-For example, according to table 1 of \cite{ogorman2017factories}, assuming a physical gate error rate of $10^{-3}$, block factories can distill a CCZ state using on the order of $10^7$ qubit-rounds while achieving error rates on the order of $10^{-11}$.
-Our factory's volume and error rate are 2-3 times larger than these respective numbers.
+According to table 1 of \cite{ogorman2017factories}, assuming a physical gate error rate of $10^{-3}$ and a footprint of 17 million physical qubits, block factories can distill a CCZ state using on the order of $10^7$ qubit-rounds while achieving error rates on the order of $10^{-11}$.
+Our factory's minimum footprint is much smaller, approximately 150 thousand qubits instead of millions, but our volume and error rates are 2-3 times larger.
 (Note that the estimate from \cite{ogorman2017factories} assumes a $|T_0\rangle$ injection error rate of $0.4 \cdot 10^{-3}$, whereas we assume  $10^{-3}$.
-Also, \cite{ogorman2017factories} does not produce an explicit physical layout which, in our experience, reveals unforeseen packing overheads.)
-But are there catalyzed block factories that are more efficient than normal block factories?
-We don't know the answer to this question.
+Also, \cite{ogorman2017factories} does not produce an explicit physical layout.
+In our experience, producing the physical layout often reveals unforeseen packing and routing overheads.)
+Clearly block factories can outperform the efficiency of our factory, assuming enough states are being distilled in parallel.
+But this raises the question of whether block factories can also be improved by catalysis; are there catalyzed block factories?
+We don't know the answer to this question, and leave it as future work.
 
 We suspect that the space of quantum circuits contains many other gems akin to the catalyzed phasing circuit.
 We consider finding these circuit to be important, because they can be surprisingly efficient at their tasks.
