@@ -1,13 +1,14 @@
-\documentclass[superscriptaddress,notitlepage,longbibliography]{revtex4-1}
+\documentclass[twocolumn,accepted=2019-03-30]{quantumarticle}
 \usepackage{amsmath}
+\usepackage[numbers]{natbib}
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{amsfonts}
-\usepackage[caption=false]{subfig}
-\usepackage[colorlinks]{hyperref}
+\usepackage[pdfpagelabels,pdftex,bookmarks,breaklinks]{hyperref}
 \usepackage[all]{hypcap}
-\usepackage{tikz}
 \usepackage[section]{placeins}
+\hypersetup{colorlinks,citecolor=blue,urlcolor=blue,linkcolor=blue}
+
 
 \newcommand{\eq}[1]{Eq.~\hyperref[eq:#1]{(\ref*{eq:#1})}}
 \renewcommand{\sec}[1]{\hyperref[sec:#1]{Section~\ref*{sec:#1}}}
@@ -55,7 +56,70 @@ This is due to the fact that non-Clifford operations are performed via magic sta
 For example, the spacetime volume (qubit-seconds) of the T state factory from \cite{fowler2018} is two orders of magnitude larger than the volume of a CNOT operation between adjacent qubits \cite{horsman2012}.
 The non-Clifford gate count will likely be particularly significant for the earliest error corrected quantum computers, which will not have enough space to distill magic states in parallel.
 
-Over the past decade, thanks to techniques such as block codes \cite{bravyi2012, fowler2013}, bridge compression \cite{fowler2012}, and many others \cite{horsman2012, campbell2017, campbell2018, litinski2018}, the cost of magic state distillation has steadily decreased.
+\begin{figure*}
+  \label{fig:overview-dataflow}
+  \resizebox{\textwidth}{!}{
+    \includegraphics{overview-dataflow.png}
+  }
+  \caption{
+    Overview of the spatial layout and data flow of the \factory{15|T\rangle}{35 \epsilon^3}{|T\rangle} construction from \cite{fowler2018} (left), our \factory{8|T\rangle}{28\epsilon^2}{|CCZ\rangle} construction (middle), and our $|T\rangle$-catalyzed \factory{8|T\rangle}{28\epsilon^2}{2|T\rangle} (right).
+    The level 1 $T$ factories (green) are effectively the same as in \cite{fowler2018}, and are performed at half code distance to balance the contributions from distillation error and code error.
+    The distillation limited error rates assume a physical gate error rate of $10^{-3}$, that the injection technique of \cite{li2015} can create level 0 $|T\rangle$ states with approximately that level of error, and that the code distance is large enough for the dominant source of error in the outputs to be distillation error.
+    The minimal distance error rates include the effects of topological errors in the surface code itself, with a code distance of 7 for level 0 $|T\rangle$ state injection, code distance 15 for level 1 factories, and code distance 31 for everything else.
+    The factory from \cite{fowler2018} has significantly better error suppression, but the amount of suppression is overkill unless one wants to run century-long computations without a single error.
+    Our factories have smaller footprints, faster output, and an amount of suppression sufficient to run proposed algorithms beyond the classically simulable regime (e.g. \cite{babbush2018}).
+    The error rates of the catalyzed T factory have asterisks because its errors are correlated: if one error occurs it can poison the catalyst state and cause many more errors.
+    This means that this factory should be used in contexts where a single error is already considered a complete failure (e.g. at the level of an entire algorithm, not as an input to further distillations).
+  }
+\end{figure*}
+
+\begin{figure*}
+  \label{fig:overview-3d}
+  \resizebox{\textwidth}{!}{
+    \includegraphics{overview-3d.png}
+  }
+  \caption{
+    Size comparison of various factories producing two magic states, including output error rates.
+    Error rates are computed assuming a physical gate error rate of $10^{-3}$, and include topological errors from the surface code itself.
+    Includes the \factory{15|T\rangle}{35 \epsilon^3}{|T\rangle} construction using braids \cite{fowler2012bridge} (left) and lattice surgery \cite{fowler2018} (middle left), as well as our \factory{8|T\rangle}{28\epsilon^2}{|CCZ\rangle} construction (middle right) and our $|T\rangle$-catalyzed \factory{8|T\rangle}{28\epsilon^2}{2|T\rangle} (right).
+    $|T\rangle$ output events are indicated with red cubes.
+    $|CCZ\rangle$ output events are indicated with a triplet of orange cubes.
+    The braided factory has been scaled to account for the fact that it uses the unrotated surface code instead of the rotated surface code \cite{horsman2012}.
+    The braided T factory's error rate is significantly higher because it uses an older injection technique, resulting in the level 0 T gates having an error rate of $10^{-2}$ instead of $2 \cdot 10^{-3}$.
+    The error rate of the catalyzed T factory has an asterisk because its errors are correlated: if one error occurs it can poison the catalyst state and cause many more errors.
+    This means that this factory should be used in contexts where a single error is already considered a complete failure (e.g. at the level of an entire algorithm, not as an input to further distillations).
+  }
+\end{figure*}
+
+\begin{figure*}
+  \label{fig:spreadsheet}
+  \resizebox{\textwidth}{!}{
+    \includegraphics{spreadsheet.png}
+  }
+  \caption{
+    Screenshot of the resource estimation spreadsheet include in the supplementary materials of this paper (file name ``calculator-CCZ-2T-resources.ods"), with various interesting cases pre-entered.
+    Assuming a physical gate error rate of $10^{-3}$, and minimal code distances, the $|CCZ\rangle$ factory is unlikely to fail when producing on the order of $10^{10}$ states.
+    This is sufficient to run classically intractable chemistry algorithms \cite{babbush2018}, but not quite sufficient to factor a 1024 bit number with a 50\% success rate (assuming that factoring an $n$ bit number requires $12 n^3$ Toffoli gates and $3n$ space \cite{zalka1998fast}).
+    However, if the physical gate error rate is improved slightly or (more plausibly) the factory is made slightly larger by increasing the level 1 code distance from 15 to 19, then the number of states that can be produced increases to be on the order of $10^{12}$.
+    This allows 4096 bit numbers to be factored (though we do not recommend using a single factory for this task, since it would take 5 years to produce the necessary magic states assuming a surface code cycle time of 1 microsecond).
+  }
+\end{figure*}
+
+\begin{figure*}
+  \label{fig:diagram-style-3d}
+  \resizebox{\textwidth}{!}{
+    \includegraphics{diagram-style-3d.png}
+  }
+  \caption{
+    Comparison of the to-scale diagram style from \cite{fowler2018} with the exaggerated-spacing diagram style used by this paper.
+    The to-scale diagram style emphasizes how things fit together and is ideal when reasoning geometrically.
+    The exaggerated-spacing diagram style emphasize how things connect together and is ideal when reasoning topologically.
+    An even more abstract diagram style for lattice surgery is the ZX calculus \cite{de2017}.
+    In \fig{ccz-graph} we show how translate a topological diagram into a ZX calculus graph.
+  }
+\end{figure*}
+
+Over the past decade, thanks to techniques such as block codes \cite{bravyi2012, fowler2013}, bridge compression \cite{fowler2012bridge}, and many others \cite{horsman2012, campbell2017, campbell2018, litinski2018}, the cost of magic state distillation has steadily decreased.
 This paper adds catalyzed phasing to the pile of known techniques, continuing the tradition of gradually chipping away at the convenient approximation that magic states are the dominant cost in error-corrected quantum computation.
 
 Note that, in this paper, we focus on optimizing the cost of distillation in the {\em single-factory regime}.
@@ -104,68 +168,6 @@ Interested readers can estimate the running time and number of physical qubits r
 \fig{spreadsheet} shows a screenshot of the spreadsheet.
 
 
-\begin{figure}[ht]
-  \label{fig:overview-dataflow}
-  \resizebox{\textwidth}{!}{
-    \includegraphics{overview-dataflow.png}
-  }
-  \caption{
-    Overview of the spatial layout and data flow of the \factory{15|T\rangle}{35 \epsilon^3}{|T\rangle} construction from \cite{fowler2018} (left), our \factory{8|T\rangle}{28\epsilon^2}{|CCZ\rangle} construction (middle), and our $|T\rangle$-catalyzed \factory{8|T\rangle}{28\epsilon^2}{2|T\rangle} (right).
-    The level 1 $T$ factories (green) are effectively the same as in \cite{fowler2018}, and are performed at half code distance to balance the contributions from distillation error and code error.
-    The distillation limited error rates assume a physical gate error rate of $10^{-3}$, that the injection technique of \cite{li2015} can create level 0 $|T\rangle$ states with approximately that level of error, and that the code distance is large enough for the dominant source of error in the outputs to be distillation error.
-    The minimal distance error rates include the effects of topological errors in the surface code itself, with a code distance of 7 for level 0 $|T\rangle$ state injection, code distance 15 for level 1 factories, and code distance 31 for everything else.
-    The factory from \cite{fowler2018} has significantly better error suppression, but the amount of suppression is overkill unless one wants to run century-long computations without a single error.
-    Our factories have smaller footprints, faster output, and an amount of suppression sufficient to run proposed algorithms beyond the classically simulable regime (e.g. \cite{babbush2018}).
-    The error rates of the catalyzed T factory have asterisks because its errors are correlated: if one error occurs it can poison the catalyst state and cause many more errors.
-    This means that this factory should be used in contexts where a single error is already considered a complete failure (e.g. at the level of an entire algorithm, not as an input to further distillations).
-  }
-\end{figure}
-
-\begin{figure}[ht]
-  \label{fig:overview-3d}
-  \resizebox{\textwidth}{!}{
-    \includegraphics{overview-3d.png}
-  }
-  \caption{
-    Size comparison of various factories producing two magic states, including output error rates.
-    Error rates are computed assuming a physical gate error rate of $10^{-3}$, and include topological errors from the surface code itself.
-    Includes the \factory{15|T\rangle}{35 \epsilon^3}{|T\rangle} construction using braids \cite{fowler2012bridge} (left) and lattice surgery \cite{fowler2018} (middle left), as well as our \factory{8|T\rangle}{28\epsilon^2}{|CCZ\rangle} construction (middle right) and our $|T\rangle$-catalyzed \factory{8|T\rangle}{28\epsilon^2}{2|T\rangle} (right).
-    $|T\rangle$ output events are indicated with red cubes.
-    $|CCZ\rangle$ output events are indicated with a triplet of orange cubes.
-    The braided factory has been scaled to account for the fact that it uses the unrotated surface code instead of the rotated surface code \cite{horsman2012}.
-    The braided T factory's error rate is significantly higher because it uses an older injection technique, resulting in the level 0 T gates having an error rate of $10^{-2}$ instead of $2 \cdot 10^{-3}$.
-    The error rate of the catalyzed T factory has an asterisk because its errors are correlated: if one error occurs it can poison the catalyst state and cause many more errors.
-    This means that this factory should be used in contexts where a single error is already considered a complete failure (e.g. at the level of an entire algorithm, not as an input to further distillations).
-  }
-\end{figure}
-
-\begin{figure}[ht]
-  \label{fig:spreadsheet}
-  \resizebox{\textwidth}{!}{
-    \includegraphics{spreadsheet.png}
-  }
-  \caption{
-    Screenshot of the resource estimation spreadsheet include in the supplementary materials of this paper (file name ``calculator-CCZ-2T-resources.ods"), with various interesting cases pre-entered.
-    Assuming a physical gate error rate of $10^{-3}$, and minimal code distances, the $|CCZ\rangle$ factory is unlikely to fail when producing on the order of $10^{10}$ states.
-    This is sufficient to run classically intractable chemistry algorithms \cite{babbush2018}, but not quite sufficient to factor a 1024 bit number with a 50\% success rate (assuming that factoring an $n$ bit number requires $12 n^3$ Toffoli gates and $3n$ space \cite{zalka1998fast}).
-    However, if the physical gate error rate is improved slightly or (more plausibly) the factory is made slightly larger by increasing the level 1 code distance from 15 to 19, then the number of states that can be produced increases to be on the order of $10^{12}$.
-    This allows 4096 bit numbers to be factored (though we do not recommend using a single factory for this task, since it would take 5 years to produce the necessary magic states assuming a surface code cycle time of 1 microsecond).
-  }
-\end{figure}
-
-\begin{figure}[ht]
-  \label{fig:diagram-style-3d}
-  \resizebox{\textwidth}{!}{
-    \includegraphics{diagram-style-3d.png}
-  }
-  \caption{
-    Comparison of the to-scale diagram style from \cite{fowler2018} with the exaggerated-spacing diagram style used by this paper.
-    The to-scale diagram style emphasizes how things fit together and is ideal when reasoning geometrically.
-    The exaggerated-spacing diagram style emphasize how things connect together and is ideal when reasoning topologically.
-    An even more abstract diagram style for lattice surgery is the ZX calculus \cite{de2017}.
-    In \fig{ccz-graph} we show how translate a topological diagram into a ZX calculus graph.
-  }
-\end{figure}
 
 
 
@@ -176,6 +178,93 @@ Interested readers can estimate the running time and number of physical qubits r
     Lattice surgery construction of the 8T to CCZ  factory
 }}
 \label{sec:ccz}
+
+\begin{figure*}
+  \label{fig:ccz-circuit}
+  \resizebox{\textwidth}{!}{
+    \includegraphics{ccz-circuit.png}
+  }
+  \caption{
+    Quantum circuit for the \factory{8|T\rangle}{28\epsilon^2}{|CCZ\rangle}.
+    A rewrite of figure 3 from \cite{jones2013}.
+    The box with blue circles in the top right is a state display from the online simulator Quirk, with each circle representing an amplitude (the radius of the colored circle indicates the amplitude's magnitude, and the angle of the line rooted at the center of the circle indicates the phase).
+    The state display is showing that the output state is a $|CCZ\rangle$ state.
+    The small circled pluses in the circuit are X-axis controls (equivalent to a normal control surrounded by Hadamard gates); whenever one of these controls directly precedes a measurement the measurement corresponds to a Pauli product measurement.
+    The post-selection operation represents the classical control software determining if the an error was detected; if it fails the output must be discarded.
+    Pauli operations and classically-controlled Pauli operations appear here, but not in \fig{ccz-3d}, because they are performed entirely within classical control software.
+    The circuit can be opened in Quirk by \href{http://algassert.com/quirk\#circuit=\%7B\%22cols\%22\%3A\%5B\%5B\%22X\%22\%2C1\%2C1\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C\%22X\%22\%2C\%22X\%22\%2C1\%2C\%22X\%22\%2C1\%2C\%22X\%22\%2C1\%2C\%22X\%22\%2C1\%2C1\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C\%22X\%22\%2C1\%2C\%22X\%22\%2C\%22X\%22\%2C1\%2C1\%2C\%22X\%22\%2C\%22X\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B\%22Z\%22\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B1\%2C\%22Z\%22\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B1\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C\%22X\%22\%5D\%2C\%5B\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B1\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%5D\%2C\%5B\%22Amps3\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%7C0\%E2\%9F\%A9\%E2\%9F\%A80\%7C\%22\%5D\%5D\%7D}{following this link}.
+    Discerning readers can follow the link and edit the circuit in order to confirm that adding a single Z error by any T gate is caught by the post-selection, and also that all possible pairs of Z errors escape detection.
+  }
+\end{figure*}
+
+\begin{figure*}
+  \label{fig:ccz-slices-simple}
+  \resizebox{\textwidth}{!}{
+    \includegraphics{ccz-slices-simple.png}
+  }
+  \caption{
+    Time slices of lattice surgery activity during production of a single $|CCZ\rangle$ state.
+    Each red square corresponds to a qubit, and the label inside the red square identifies the qubit from \fig{ccz-circuit} that the square corresponds to.
+    Gray rectangles correspond to X stabilizer measurements between sets of qubits.
+    The red arrows labelled ``T" correspond to a noisy T state entering the system.
+    It is possible to double the throughput shown here by interleaving the production of two states (shown in \fig{ccz-slices}).
+  }
+
+  \resizebox{\textwidth}{!}{
+    \includegraphics{ccz-slices.png}
+  }
+  \caption{
+    Time slices of lattice surgery activity during production of $|CCZ\rangle$ states by the \factory{8|T\rangle}{28\epsilon^2}{|CCZ\rangle}.
+    To maximize utilization, two states are produced concurrently.
+    Each red or blue square corresponds to a qubit, and the label inside the square identifies the qubit from \fig{ccz-circuit} that the square corresponds to.
+    Gray rectangles correspond to X stabilizer measurements between sets of qubits.
+    The red arrows labelled ``T" correspond to a noisy T state entering the system.
+    Blue squares correspond to qubits involved in producing one of the states, and red squares correspond to qubits involved in producing the other state.
+    The red squares in each step are exactly identical to the red squares shown in the matching step of \fig{ccz-slices-simple}.
+    See \fig{ccz-3d} for a 3D topological diagram corresponding to the time slices.
+  }
+  \label{fig:ccz-slices}
+\end{figure*}
+
+\begin{figure*}
+  \label{fig:ccz-3d}
+  \includegraphics[width=\textwidth,height=\dimexpr\textheight-14\baselineskip,keepaspectratio]{ccz-3d.png}
+  \caption{
+    3D topological diagram for our construction of the \factory{8|T\rangle}{28\epsilon^2}{|CCZ\rangle}.
+    The spacing between qubits has been increased to make it possible to see the internal structure.
+    White (black) surfaces correspond to boundaries where chains of Z (X) errors can terminate.
+    Corresponds to the time slices from \fig{ccz-slices}.
+    Time increases from bottom to top.
+    The vertical poles correspond to qubits from \fig{ccz-circuit}.
+    Red boxes indicate connection points for noisy $|T_1\rangle$ states produced by a level 1 T factory.
+    The green boxes atop the columns are performing either an X or Y basis measurement at half code distance, as described in \cite{fowler2018}, by including or omitting an S gate performed using twists \cite{brown2017poking}.
+    Using half code distance is acceptable because, at the location in the factory where these operations are performed (i.e. after the T injections), individual errors are detected as distillation failures.
+    The labels along the right hand side indicate the stabilizer measurements occurring at each time.
+    The red/blue coloring of labels matches the red/blue coloring of \fig{ccz-slices}.
+    Note that inserting the $|T_1\rangle$ state has a depth of 1.5, unlike the other steps which have depth 1.
+    Each horizontal bar linking several vertical poles is a stabilizer measurement of a product of logical X observables.
+    The groups of three qubits highlighted orange and exiting left are the $|CCZ\rangle$ states being output (note that the middle pole of each $|CCZ\rangle$ state is rotated with respect to the others, with white on top instead of black on top).
+    The two instances of the factory that are shown differ slightly.
+    Their qubits have been permuted so that each factory's top layer fits into a void at the bottom of the following factory, saving a layer of depth.
+  }
+\end{figure*}
+
+\begin{figure*}
+  \label{fig:ccz-graph}
+  \resizebox{\textwidth}{!}{
+    \includegraphics{ccz-graph.png}
+  }
+  \caption{
+    A substitution procedure (left) for translating our 3D topological diagrams into (nearly) the ZX calculus \cite{de2017}, as well as an example translation of one of the CCZ factories from \fig{ccz-3d} (right).
+    We use black (white) nodes instead of green (red) nodes (the usual notation for the ZX calculus) so that the node colors match the boundary colors in the 3D topological diagrams.
+    Pieces with two ports are translated into edges or degree-2 nodes of either color.
+    Pieces with three or more ports are translated into a node of matching color.
+    The $Z \otimes Z$ measurement of a qubit vs a $|T\rangle$ state followed by measuring the qubit in the X or Y basis depending on the outcome of the parity measurement is translated into a (non-standard) red node.
+    The red node can be expanded into a proper ZX calculus construction, but we do not attempt to do so.
+    The ZX calculus graph is more amenable to verification than the 3D diagram.
+    The reverse translation, from ZX calculus graph to 3D topological diagram, is often more difficult.
+  }
+\end{figure*}
 
 A key technique introduced in \cite{fowler2018} is a single-layer stabilizer measurement involving an arbitrary numbers of qubits.
 We use this technique in order to quickly measure the 4 stabilizers of the error-detecting Toffoli distillation protocol \cite{jones2013, eastin2013distilling}.
@@ -239,93 +328,6 @@ The CCZ factory has a code distance large enough that we are distillation limite
 As shown in figure \fig{spreadsheet}, the minimal distance factory causes errors in more than 50\% of runs when attempting to factor a 1024 bit number, but can comfortably run classically intractable chemistry algorithms.
 However, if one increases the level 1 code distance from 15 to 19 (increasing the footprint of the factory by roughly 20\%), then the level 1 error improves so much that it's possible to factor 4096 bit numbers.
 
-\begin{figure}[ht]
-  \label{fig:ccz-circuit}
-  \resizebox{\textwidth}{!}{
-    \includegraphics{ccz-circuit.png}
-  }
-  \caption{
-    Quantum circuit for the \factory{8|T\rangle}{28\epsilon^2}{|CCZ\rangle}.
-    A rewrite of figure 3 from \cite{jones2013}.
-    The box with blue circles in the top right is a state display from the online simulator Quirk, with each circle representing an amplitude (the radius of the colored circle indicates the amplitude's magnitude, and the angle of the line rooted at the center of the circle indicates the phase).
-    The state display is showing that the output state is a $|CCZ\rangle$ state.
-    The small circled pluses in the circuit are X-axis controls (equivalent to a normal control surrounded by Hadamard gates); whenever one of these controls directly precedes a measurement the measurement corresponds to a Pauli product measurement.
-    The post-selection operation represents the classical control software determining if the an error was detected; if it fails the output must be discarded.
-    Pauli operations and classically-controlled Pauli operations appear here, but not in \fig{ccz-3d}, because they are performed entirely within classical control software.
-    The circuit can be opened in Quirk by \href{http://algassert.com/quirk\#circuit=\%7B\%22cols\%22\%3A\%5B\%5B\%22X\%22\%2C1\%2C1\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C\%22X\%22\%2C\%22X\%22\%2C1\%2C\%22X\%22\%2C1\%2C\%22X\%22\%2C1\%2C\%22X\%22\%2C1\%2C1\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C\%22X\%22\%2C1\%2C\%22X\%22\%2C\%22X\%22\%2C1\%2C1\%2C\%22X\%22\%2C\%22X\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%2C\%22Z\%5E\%C2\%BC\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%2C\%22Measure\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B\%22Z\%22\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B1\%2C\%22Z\%22\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B1\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C\%22X\%22\%5D\%2C\%5B\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B1\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%5D\%2C\%5B\%22Amps3\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%7C0\%E2\%9F\%A9\%E2\%9F\%A80\%7C\%22\%5D\%5D\%7D}{following this link}.
-    Discerning readers can follow the link and edit the circuit in order to confirm that adding a single Z error by any T gate is caught by the post-selection, and also that all possible pairs of Z errors escape detection.
-  }
-\end{figure}
-
-\begin{figure}[ht]
-  \label{fig:ccz-slices-simple}
-  \resizebox{\textwidth}{!}{
-    \includegraphics{ccz-slices-simple.png}
-  }
-  \caption{
-    Time slices of lattice surgery activity during production of a single $|CCZ\rangle$ state.
-    Each red square corresponds to a qubit, and the label inside the red square identifies the qubit from \fig{ccz-circuit} that the square corresponds to.
-    Gray rectangles correspond to X stabilizer measurements between sets of qubits.
-    The red arrows labelled ``T" correspond to a noisy T state entering the system.
-    It is possible to double the throughput shown here by interleaving the production of two states (shown in \fig{ccz-slices}).
-  }
-
-  \resizebox{\textwidth}{!}{
-    \includegraphics{ccz-slices.png}
-  }
-  \caption{
-    Time slices of lattice surgery activity during production of $|CCZ\rangle$ states by the \factory{8|T\rangle}{28\epsilon^2}{|CCZ\rangle}.
-    To maximize utilization, two states are produced concurrently.
-    Each red or blue square corresponds to a qubit, and the label inside the square identifies the qubit from \fig{ccz-circuit} that the square corresponds to.
-    Gray rectangles correspond to X stabilizer measurements between sets of qubits.
-    The red arrows labelled ``T" correspond to a noisy T state entering the system.
-    Blue squares correspond to qubits involved in producing one of the states, and red squares correspond to qubits involved in producing the other state.
-    The red squares in each step are exactly identical to the red squares shown in the matching step of \fig{ccz-slices-simple}.
-    See \fig{ccz-3d} for a 3D topological diagram corresponding to the time slices.
-  }
-  \label{fig:ccz-slices}
-\end{figure}
-
-\begin{figure}[ht]
-  \label{fig:ccz-3d}
-  \includegraphics[width=\textwidth,height=\dimexpr\textheight-14\baselineskip,keepaspectratio]{ccz-3d.png}
-  \caption{
-    3D topological diagram for our construction of the \factory{8|T\rangle}{28\epsilon^2}{|CCZ\rangle}.
-    The spacing between qubits has been increased to make it possible to see the internal structure.
-    White (black) surfaces correspond to boundaries where chains of Z (X) errors can terminate.
-    Corresponds to the time slices from \fig{ccz-slices}.
-    Time increases from bottom to top.
-    The vertical poles correspond to qubits from \fig{ccz-circuit}.
-    Red boxes indicate connection points for noisy $|T_1\rangle$ states produced by a level 1 T factory.
-    The green boxes atop the columns are performing either an X or Y basis measurement at half code distance, as described in \cite{fowler2018}, by including or omitting an S gate performed using twists \cite{brown2017poking}.
-    Using half code distance is acceptable because, at the location in the factory where these operations are performed (i.e. after the T injections), individual errors are detected as distillation failures.
-    The labels along the right hand side indicate the stabilizer measurements occurring at each time.
-    The red/blue coloring of labels matches the red/blue coloring of \fig{ccz-slices}.
-    Note that inserting the $|T_1\rangle$ state has a depth of 1.5, unlike the other steps which have depth 1.
-    Each horizontal bar linking several vertical poles is a stabilizer measurement of a product of logical X observables.
-    The groups of three qubits highlighted orange and exiting left are the $|CCZ\rangle$ states being output (note that the middle pole of each $|CCZ\rangle$ state is rotated with respect to the others, with white on top instead of black on top).
-    The two instances of the factory that are shown differ slightly.
-    Their qubits have been permuted so that each factory's top layer fits into a void at the bottom of the following factory, saving a layer of depth.
-  }
-\end{figure}
-
-\begin{figure}[ht]
-  \label{fig:ccz-graph}
-  \resizebox{\textwidth}{!}{
-    \includegraphics{ccz-graph.png}
-  }
-  \caption{
-    A substitution procedure (left) for translating our 3D topological diagrams into (nearly) the ZX calculus \cite{de2017}, as well as an example translation of one of the CCZ factories from \fig{ccz-3d} (right).
-    We use black (white) nodes instead of green (red) nodes (the usual notation for the ZX calculus) so that the node colors match the boundary colors in the 3D topological diagrams.
-    Pieces with two ports are translated into edges or degree-2 nodes of either color.
-    Pieces with three or more ports are translated into a node of matching color.
-    The $Z \otimes Z$ measurement of a qubit vs a $|T\rangle$ state followed by measuring the qubit in the X or Y basis depending on the outcome of the parity measurement is translated into a (non-standard) red node.
-    The red node can be expanded into a proper ZX calculus construction, but we do not attempt to do so.
-    The ZX calculus graph is more amenable to verification than the 3D diagram.
-    The reverse translation, from ZX calculus graph to 3D topological diagram, is often more difficult.
-  }
-\end{figure}
-
 
 
 
@@ -335,6 +337,69 @@ However, if one increases the level 1 code distance from 15 to 19 (increasing th
     The T-catalyzed CCZ to 2T Factory
 }}
 \label{sec:catalysis}
+
+\begin{figure*}
+    \label{fig:catalysis-circuit-simple}
+    \centering
+    \resizebox{\linewidth}{!}{
+        \includegraphics{catalysis-circuit-simple.png}
+    }
+    \caption{
+      A circuit that transforms a $|CCZ\rangle$ state into three $|T\rangle$ states by applying Clifford operations and a single T gate.
+      By using one of the outputs to fuel the next iteration, the circuit can be re-interpreted as a circuit that turns one $|CCZ\rangle$ into two $|T\rangle$ states when catalyzed by one $|T\rangle$ state.
+      The boxes with blue circles are state displays from the online simulator Quirk, with each circle representing an amplitude (the radius of the colored circle indicates the amplitude's magnitude, and the angle of the line rooted at the center of the circle indicates the phase).
+      The state displays are showing that the input state is a $|CCZ\rangle$ and the output states are $|T\rangle$ states.
+      The small circled pluses are X-axis controls (equivalent to a normal control surrounded by Hadamard gates).
+      The circuit can be opened in Quirk by \href{http://algassert.com/quirk\#circuit=\%7B\%22cols\%22\%3A\%5B\%5B\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%5D\%2C\%5B\%22\%E2\%80\%A2\%22\%2C\%22\%E2\%80\%A2\%22\%2C\%22Z\%22\%5D\%2C\%5B\%22Amps3\%22\%5D\%2C\%5B\%5D\%2C\%5B1\%2C1\%2C\%22X\%5E-\%C2\%BD\%22\%5D\%2C\%5B\%22X\%22\%2C\%22X\%22\%2C\%22\%E2\%97\%A6\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C\%22Z\%5E-\%C2\%BC\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B\%22Amps1\%22\%2C\%22Amps1\%22\%2C\%22Amps1\%22\%5D\%5D\%7D}{following this link}.
+    }
+\end{figure*}
+
+\begin{figure*}
+    \label{fig:catalysis-circuit}
+    \centering
+    \includegraphics[width=\textwidth,height=\dimexpr\textheight-11\baselineskip,keepaspectratio]{catalysis-circuit.png}
+    \caption{
+      A circuit for catalyzed $|T\rangle$ state production, specialized for lattice surgery.
+      Given a $|CCZ\rangle$ state (first three qubits) and a $|T\rangle$ state (fourth qubit), produces three $|T\rangle$ states.
+      Red areas correspond to a product-of-Paulis measurement.
+      The blue area happens entirely within classical control software.
+      The $S$ ancilla is preparing an $|S\rangle$ state that can be used to correct the T gate teleportation used to perform the $Z^{-1/4}$ gate from \fig{catalysis-circuit-simple}.
+      The $B$ ancilla is being used to perform the $X^{-1/2}$ gate from \fig{catalysis-circuit-simple}.
+      The $A$ ancilla is being used to perform the multi-target CNOT from \fig{catalysis-circuit-simple}.
+      The boxes with blue circles, at the beginning and end of the circuit, are state displays from the online simulator Quirk.
+      Each circle represents an amplitude (the radius of the colored circle indicates the amplitude's magnitude, and the angle of the line rooted at the center of the circle indicates the phase).
+      The state displays are showing that the input and output states are $|CCZ\rangle$ and $|T\rangle$ states as described.
+      The small circled pluses in the circuit are X-axis controls (equivalent to a normal control surrounded by Hadamard gates); whenever one of these controls directly precedes a measurement the measurement corresponds to a Pauli product measurement.
+      The circuit can be opened in Quirk by \href{http://algassert.com/quirk\#circuit=\%7B\%22cols\%22\%3A\%5B\%5B\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22Z\%5E\%C2\%BC\%22\%5D\%2C\%5B\%22\%E2\%80\%A2\%22\%2C\%22\%E2\%80\%A2\%22\%2C\%22Z\%22\%5D\%2C\%5B\%22Amps3\%22\%2C1\%2C1\%2C\%22Amps1\%22\%5D\%2C\%5B\%5D\%2C\%5B1\%2C1\%2C\%22X\%22\%2C1\%2C1\%2C\%22X\%22\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%5D\%2C\%5B\%22X\%22\%2C\%22X\%22\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%5E\%C2\%BD\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22H\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22Measure\%22\%2C1\%2C\%22Measure\%22\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C\%22X\%5E-\%C2\%BD\%22\%5D\%2C\%5B1\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22H\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C\%22X\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C\%22H\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B1\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B1\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B\%22X\%22\%2C\%22X\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B1\%2C1\%2C\%22X\%22\%5D\%2C\%5B\%22Amps1\%22\%2C\%22Amps1\%22\%2C\%22Amps1\%22\%5D\%5D\%7D}{following this link}.
+    }
+\end{figure*}
+
+\begin{figure*}
+    \label{fig:catalysis-slices}
+    \centering
+    \resizebox{\linewidth}{!}{
+        \includegraphics{catalysis-slices.png}
+    }
+    \caption{
+        Time slices of lattice surgery activity during transformation of a $|CCZ\rangle$ state (orange qubits labelled 1, 2, 3) into three $|T\rangle$ states (shown in red in last slice), catalyzed by a $|T\rangle$ state (bottom right qubit in red).
+        Black and dark gray bars correspond to stabilizer measurements.
+        Ancillae qubits are shown in blue.
+        The code distance of the ancillae qubits is doubled when single-qubit Clifford operations are being applied, to ensure there is sufficient suppression of errors.
+        The light gray ``(CCZ)" box to the left will be used by the CCZ factory producing $|CCZ\rangle$ states to be transformed.
+        See \fig{catalysis-3d} for a 3D topological diagram corresponding to the time slices.
+        Every step being performed can be matched up with a step from \fig{catalysis-circuit}, and the qubit labels shown here correspond to the qubit labels there.
+    }
+\end{figure*}
+
+\begin{figure*}
+  \label{fig:catalysis-3d}
+  \includegraphics[width=\textwidth,height=\dimexpr\textheight-6\baselineskip,keepaspectratio]{catalysis-3d.png}
+  \caption{
+    3D topological diagram of a lattice surgery circuit transforming a $|CCZ\rangle$ state (orange-tipped inputs at bottom) and a $|T\rangle$ state (bottom right red-tipped input) into three $|T\rangle$ states (red-tipped outputs at top).
+    We conservatively assume that the green boxes are large enough to perform any single-qubit Clifford with negligible error.
+    See \fig{ccz-3d} for details about how to interpret the diagram.
+  }
+\end{figure*}
 
 In \cite{jones2013}, it is shown how to perform a Toffoli gate by using Clifford operations, measurement, and four T gates.
 That circuit can be rewritten into an inline circuit that transforms three $|+\rangle$ states into a $|CCZ\rangle$ state via Clifford operations and four T gates \cite{gidney2018}.
@@ -365,68 +430,6 @@ We show the result of this translation in \fig{catalysis-slices}, which has time
 And finally \fig{catalysis-3d} shows an annotated 3D topological diagram of the process.
 
 
-\begin{figure}[ht]
-    \label{fig:catalysis-circuit-simple}
-    \centering
-    \resizebox{\linewidth}{!}{
-        \includegraphics{catalysis-circuit-simple.png}
-    }
-    \caption{
-      A circuit that transforms a $|CCZ\rangle$ state into three $|T\rangle$ states by applying Clifford operations and a single T gate.
-      By using one of the outputs to fuel the next iteration, the circuit can be re-interpreted as a circuit that turns one $|CCZ\rangle$ into two $|T\rangle$ states when catalyzed by one $|T\rangle$ state.
-      The boxes with blue circles are state displays from the online simulator Quirk, with each circle representing an amplitude (the radius of the colored circle indicates the amplitude's magnitude, and the angle of the line rooted at the center of the circle indicates the phase).
-      The state displays are showing that the input state is a $|CCZ\rangle$ and the output states are $|T\rangle$ states.
-      The small circled pluses are X-axis controls (equivalent to a normal control surrounded by Hadamard gates).
-      The circuit can be opened in Quirk by \href{http://algassert.com/quirk\#circuit=\%7B\%22cols\%22\%3A\%5B\%5B\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%5D\%2C\%5B\%22\%E2\%80\%A2\%22\%2C\%22\%E2\%80\%A2\%22\%2C\%22Z\%22\%5D\%2C\%5B\%22Amps3\%22\%5D\%2C\%5B\%5D\%2C\%5B1\%2C1\%2C\%22X\%5E-\%C2\%BD\%22\%5D\%2C\%5B\%22X\%22\%2C\%22X\%22\%2C\%22\%E2\%97\%A6\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C\%22Z\%5E-\%C2\%BC\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B\%22Amps1\%22\%2C\%22Amps1\%22\%2C\%22Amps1\%22\%5D\%5D\%7D}{following this link}.
-    }
-\end{figure}
-
-\begin{figure}[ht]
-    \label{fig:catalysis-circuit}
-    \centering
-    \includegraphics[width=\textwidth,height=\dimexpr\textheight-11\baselineskip,keepaspectratio]{catalysis-circuit.png}
-    \caption{
-      A circuit for catalyzed $|T\rangle$ state production, specialized for lattice surgery.
-      Given a $|CCZ\rangle$ state (first three qubits) and a $|T\rangle$ state (fourth qubit), produces three $|T\rangle$ states.
-      Red areas correspond to a product-of-Paulis measurement.
-      The blue area happens entirely within classical control software.
-      The $S$ ancilla is preparing an $|S\rangle$ state that can be used to correct the T gate teleportation used to perform the $Z^{-1/4}$ gate from \fig{catalysis-circuit-simple}.
-      The $B$ ancilla is being used to perform the $X^{-1/2}$ gate from \fig{catalysis-circuit-simple}.
-      The $A$ ancilla is being used to perform the multi-target CNOT from \fig{catalysis-circuit-simple}.
-      The boxes with blue circles, at the beginning and end of the circuit, are state displays from the online simulator Quirk.
-      Each circle represents an amplitude (the radius of the colored circle indicates the amplitude's magnitude, and the angle of the line rooted at the center of the circle indicates the phase).
-      The state displays are showing that the input and output states are $|CCZ\rangle$ and $|T\rangle$ states as described.
-      The small circled pluses in the circuit are X-axis controls (equivalent to a normal control surrounded by Hadamard gates); whenever one of these controls directly precedes a measurement the measurement corresponds to a Pauli product measurement.
-      The circuit can be opened in Quirk by \href{http://algassert.com/quirk\#circuit=\%7B\%22cols\%22\%3A\%5B\%5B\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%2C\%22H\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22Z\%5E\%C2\%BC\%22\%5D\%2C\%5B\%22\%E2\%80\%A2\%22\%2C\%22\%E2\%80\%A2\%22\%2C\%22Z\%22\%5D\%2C\%5B\%22Amps3\%22\%2C1\%2C1\%2C\%22Amps1\%22\%5D\%2C\%5B\%5D\%2C\%5B1\%2C1\%2C\%22X\%22\%2C1\%2C1\%2C\%22X\%22\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%5D\%2C\%5B\%22X\%22\%2C\%22X\%22\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%5E\%C2\%BD\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22H\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C\%22Measure\%22\%2C1\%2C\%22Measure\%22\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C\%22X\%5E-\%C2\%BD\%22\%5D\%2C\%5B1\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22H\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C\%22X\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C1\%2C\%22X\%22\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C\%22X\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C\%22\%E2\%8A\%96\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C\%22H\%22\%5D\%2C\%5B1\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22Measure\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C1\%2C\%22\%E2\%80\%A2\%22\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B1\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B1\%2C1\%2C\%22Z\%22\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B\%22Z\%22\%2C\%22Z\%22\%2C\%22Z\%22\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B\%22X\%22\%2C\%22X\%22\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B\%22X\%22\%2C\%22X\%22\%2C\%22X\%22\%2C1\%2C1\%2C\%22\%E2\%80\%A2\%22\%5D\%2C\%5B1\%2C1\%2C\%22X\%22\%5D\%2C\%5B\%22Amps1\%22\%2C\%22Amps1\%22\%2C\%22Amps1\%22\%5D\%5D\%7D}{following this link}.
-    }
-\end{figure}
-
-\begin{figure}[ht]
-    \label{fig:catalysis-slices}
-    \centering
-    \resizebox{\linewidth}{!}{
-        \includegraphics{catalysis-slices.png}
-    }
-    \caption{
-        Time slices of lattice surgery activity during transformation of a $|CCZ\rangle$ state (orange qubits labelled 1, 2, 3) into three $|T\rangle$ states (shown in red in last slice), catalyzed by a $|T\rangle$ state (bottom right qubit in red).
-        Black and dark gray bars correspond to stabilizer measurements.
-        Ancillae qubits are shown in blue.
-        The code distance of the ancillae qubits is doubled when single-qubit Clifford operations are being applied, to ensure there is sufficient suppression of errors.
-        The light gray ``(CCZ)" box to the left will be used by the CCZ factory producing $|CCZ\rangle$ states to be transformed.
-        See \fig{catalysis-3d} for a 3D topological diagram corresponding to the time slices.
-        Every step being performed can be matched up with a step from \fig{catalysis-circuit}, and the qubit labels shown here correspond to the qubit labels there.
-    }
-\end{figure}
-
-\begin{figure}[ht]
-  \label{fig:catalysis-3d}
-  \includegraphics[width=\textwidth,height=\dimexpr\textheight-6\baselineskip,keepaspectratio]{catalysis-3d.png}
-  \caption{
-    3D topological diagram of a lattice surgery circuit transforming a $|CCZ\rangle$ state (orange-tipped inputs at bottom) and a $|T\rangle$ state (bottom right red-tipped input) into three $|T\rangle$ states (red-tipped outputs at top).
-    We conservatively assume that the green boxes are large enough to perform any single-qubit Clifford with negligible error.
-    See \fig{ccz-3d} for details about how to interpret the diagram.
-  }
-\end{figure}
 
 
 
@@ -451,7 +454,16 @@ A final example: the phase-gradient-via-addition operation described in \cite{ki
 Phase-gradient-via-addition is the closest to competing with phase catalysis, which is perhaps not surprising since phase catalysis is an optimized form of this technique.
 Other techniques appear to be very far behind; requiring an order of magnitude more spacetime volume.
 
-\begin{figure}[ht]
+
+
+\section{\texorpdfstring{
+Lattice surgery construction of the \factory{8|T\rangle}{28\epsilon^2}{2|T\rangle}
+}{
+Lattice surgery construction of the 8T to 2T factory
+}}
+\label{sec:full}
+
+\begin{figure*}
     \label{fig:catalysis-circuit-generalized}
     \centering
     \resizebox{\linewidth}{!}{
@@ -461,9 +473,9 @@ Other techniques appear to be very far behind; requiring an order of magnitude m
         Generalized phase catalysis circuit.
         Given a $Z^\theta |+\rangle$ catalyst, two $Z^\theta$ operations can be applied via stabilizer gates, one AND computation gate (notation from \cite{gidney2018}), and one $Z^{2 \theta}$ gate.
     }
-\end{figure}
+\end{figure*}
 
-\begin{figure}[ht]
+\begin{figure*}
     \label{fig:catalysis-circuit-sqrt-t}
     \centering
     \resizebox{\linewidth}{!}{
@@ -473,16 +485,7 @@ Other techniques appear to be very far behind; requiring an order of magnitude m
         Using a catalyst $|\sqrt{T}\rangle$ state to create 2 additional $|\sqrt{T}\rangle$ states using cheap stabilizer operations, one T gate, and one AND computation.
         Has a T-cost of $5$ \cite{jones2013, gidney2018}, implying the T-cost of a $\sqrt{T}$ state is at most $2.5$.
     }
-\end{figure}
-
-
-
-\section{\texorpdfstring{
-Lattice surgery construction of the \factory{8|T\rangle}{28\epsilon^2}{2|T\rangle}
-}{
-Lattice surgery construction of the 8T to 2T factory
-}}
-\label{sec:full}
+\end{figure*}
 
 We now combine the $|CCZ\rangle$ factory from \sec{ccz} with the C2T factory from \sec{catalysis}, producing a $|T\rangle$-catalyzed T factory that transforms eight noisy $|T\rangle$ states into two $|T\rangle$ states with quadratically less noise.
 Note that this means we achieve a 4:1 ratio of input $|T\rangle$ states to output $|T\rangle$ state, which is competitive with the 3:1 ratio of block codes \cite{bravyi2012}.
@@ -516,7 +519,12 @@ There are many ways to achieve such a small gain, and \fig{t1-3d} sketches one w
 Therefore the $T_1$ factories can keep up with the catalyzed T factory producing a pair of $|T_2\rangle$ states every $6.5d$ cycles.
 
 
-\begin{figure}[ht]
+
+
+\section{Conclusions}
+\label{sec:conclusion}
+
+\begin{figure*}
     \label{fig:t1-3d}
     \centering
     \includegraphics[width=\textwidth,height=\dimexpr\textheight-12\baselineskip,keepaspectratio]{t1-3d.png}
@@ -531,9 +539,9 @@ Therefore the $T_1$ factories can keep up with the catalyzed T factory producing
         The transition back from B to A cannot be lowered quite as far, because the top of B would intersect the first central bar used in A.
         Overall this optimization saves $0.5d/2$ depth relative to the interleaving technique used in \cite{fowler2018}.
     }
-\end{figure}
+\end{figure*}
 
-\begin{figure}[ht]
+\begin{figure*}
   \label{fig:full-slices}
   \resizebox{\textwidth}{!}{
     \includegraphics{full-slices.png}
@@ -543,9 +551,9 @@ Therefore the $T_1$ factories can keep up with the catalyzed T factory producing
     Every step being performed can be matched up with \fig{ccz-circuit} and \fig{catalysis-slices}.
     See \fig{full-3d} for the 3D topological diagram these time slices come from.
   }
-\end{figure}
+\end{figure*}
 
-\begin{figure}[ht]
+\begin{figure*}
   \label{fig:full-3d}
     \includegraphics[width=\textwidth,height=\dimexpr\textheight-6\baselineskip,keepaspectratio]{full-3d.png}
   \caption{
@@ -553,11 +561,7 @@ Therefore the $T_1$ factories can keep up with the catalyzed T factory producing
     Contrast with the time slices from \fig{full-slices}, and the circuit in \fig{ccz-circuit} combined with the circuit in \fig{catalysis-circuit-simple}.
     Single-qubit Clifford gates that would affect the catalyst $|T\rangle$ if they failed are performed with extremely conservative code distance (large green boxes).
   }
-\end{figure}
-
-
-\section{Conclusions}
-\label{sec:conclusion}
+\end{figure*}
 
 In this paper we presented two factories: a $|CCZ\rangle$ factory and a catalyzed $|T\rangle$ factory.
 We compiled these factories all the way down to 3d topological diagrams (see \fig{continuous-operation-3d}) and gave detailed estimates of their spacetime volume, footprint, and error rates.
@@ -605,15 +609,16 @@ If the connection is actually of this form, then perhaps it is possible to write
 We thank Earl T. Campbell for reviewing a draft of this paper and suggesting useful references.
 
 
+\bibliographystyle{plainnat}
 \bibliography{refs}
 
-\begin{figure}[ht]
+\begin{figure*}
   \label{fig:continuous-operation-3d}
     \includegraphics[width=\textwidth,height=\dimexpr\textheight-6\baselineskip,keepaspectratio]{continuous-operation-3d.png}
   \caption{
     3D topological diagram showing tiled operation of our CCZ factory (left) and our catalyzed T factory (right).
     Includes the half-distance level 1 T factories feeding noisy states into the larger factories.
   }
-\end{figure}
+\end{figure*}
 
 \end{document}
